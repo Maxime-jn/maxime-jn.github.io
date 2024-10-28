@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+        color: #333;
+    }
+
+    h1 {
+        text-align: center;
+        margin-top: 20px;
+        color: #444;
+    }
+
+    table {
+        width: 80%;
+        margin: 40px auto;
+        border-collapse: separate;
+        border-spacing: 0;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    th {
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px;
+    }
+
+    td {
+        padding: 12px;
+        text-align: left;
+        background-color: white;
+
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 10px;
+    }
+
+    th,
+    td {
+        border-bottom: 1px solid #ddd;
+    }
+
+    img {
+        width: 100px;
+        height: auto;
+        border-radius: 6px;
+    }
+</style>
+
+<body>
+    <div id="map" style="height: 400px;"></div>
+
+
+    <img src="images/logoPhoot.png" alt="img">
+
+    <video id="myVideo" autoplay></video>
+
+
+    <script type="module" src="main.js"></script>
+</body>
+
+
+</html>

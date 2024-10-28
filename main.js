@@ -13,8 +13,8 @@ img.addEventListener("click", async () => {
 
     const constraints = {
         video: {
-            width: { ideal: 800 },
-            height: { ideal: 720 },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
             facingMode: { exact: "environment" }
         }
     };

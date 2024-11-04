@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Carte PWA Genève</title>
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 </head>
 <style>
@@ -16,33 +18,130 @@
         padding: 0;
         background-color: #f4f4f9;
         color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
 
-    img {
-        width: 100px;
-        height: auto;
+    #map {
+        width: 100%;
+        height: 60vh;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        max-width: 1200px;
     }
 
-    video{
-        width: 70%;
-        height: auto;
+
+    #details {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.95);
+        z-index: 1000;
+        padding: 30px;
+        overflow-y: auto;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+        transition: opacity 0.3s ease;
+        opacity: 0;
+    }
+
+    #details.active {
+        display: block;
+        opacity: 1;
+    }
+
+    #markerContent {
+        font-size: 1.1em;
+        color: #444;
+        line-height: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+    .back-button {
+        background-color: #ff5c5c;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+        background-color: #ff3b3b;
+    }
+
+    #toggleCamera {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    #toggleCamera:hover {
+        background-color: #45a049;
+        transform: scale(1.1);
     }
 
 
+    #myVideo {
+        width: 80%;
+        max-width: 800px;
+        margin: 20px auto;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+
+    @media (max-width: 768px) {
+        #map {
+            height: 50vh;
+        }
+
+        #myVideo {
+            width: 90%;
+        }
+    }
 </style>
 
 <body>
-    <div id="map" style="height: 400px;"></div>
+
+    <div id="map"></div>
 
 
-    <img src="images/logoPhoot.png" alt="img">
+    <div id="details" class="w3-container">
+        <h2>Détails du marqueur</h2>
+        <div id="markerContent">
 
+        </div>
+        <button onclick="closeDetails()" class="w3-button w3-red back-button">Retour à la carte</button>
+    </div>
+
+
+    <button id="toggleCamera" class="w3-button w3-blue">Bascule caméra</button>
     <video id="myVideo" autoplay></video>
 
 
-    <script type="module" src="main.js"></script>
+    <script src="main.js" type="module"></script>
 </body>
-
 
 </html>

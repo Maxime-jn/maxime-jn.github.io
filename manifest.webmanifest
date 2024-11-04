@@ -1,9 +1,9 @@
 {
     "lang": "fr",
     "dir": "ltr",
-    "name": " Geocaching",
-    "description": "Geocaching+ camera",
-    "short_name": "Geocaching",
+    "name": " PWA Hub maxime.jn",
+    "description": "PWA Hub",
+    "short_name": "PWA hub",
     "scope": "/",
     "start_url": "/",
     "display": "standalone",

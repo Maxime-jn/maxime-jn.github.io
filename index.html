@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Random Hello World PWA - A Multi-Language Progressive Web App</title>
-    <meta name="description" content="Says &quot;Hello World!&quot; in a random human language, on a random background color. It's a PWA, so you can try it in your browser, and add it to your home screen.">
+    <meta name="description"
+        content="Says &quot;Hello World!&quot; in a random human language, on a random background color. It's a PWA, so you can try it in your browser, and add it to your home screen.">
 
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="apple-touch-icon" href="/images/manifest/icons/random-hello-world-pwa-icon-180.png">
@@ -25,20 +26,24 @@
             </a>
         </div>
     </header>
-    <main id="main">
-        <p class="message" id="message">Hello World!</p>
+    <main>
+
+        <div>
+            <a href="Drapeau/index.html">
+                <H1>Drapeau</H1>
+            </a>
+        </div>
+        <div>
+            <a href="GE-oaching/index.html">
+                <H1>GE-oaching</H1>
+            </a>
+        </div>
+
+
+
     </main>
 
-    <script type="module" src="/scripts/main.js"></script>
 
-    <script>
-        // Register service worker
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("/sw.js");
-            });
-        }
-    </script>
 </body>
 
 </html>

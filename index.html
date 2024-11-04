@@ -12,20 +12,70 @@
     <link rel="apple-touch-icon" href="/images/manifest/icons/random-hello-world-pwa-icon-180.png">
     <meta name="theme-color" content="#000000" />
 
-    <link rel="stylesheet" href="/styles/normalize.css">
-    <link rel="stylesheet" href="/styles/main.css">
 </head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+    }
+
+    div {
+        width: 80%;
+        max-width: 400px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    div:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    a {
+        text-decoration: none;
+        color: #333;
+        display: block;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        div {
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 1.2em;
+        }
+    }
+</style>
 
 <body>
-    <header class="toolbar" id="toolbar">
-        <h1 id="title" class="toolbar__title">Hello World</h1>
-        <div class="toolbar__actions">
-            <i id="shuffle" class="toolbar__action icon--refresh" title="Reload message"></i>
-            <a href="https://www.tecdrop.com" target="_blank" rel="noopener">
-                <i class="toolbar__action icon--info" title="App info"></i>
-            </a>
-        </div>
-    </header>
     <main>
 
         <div>

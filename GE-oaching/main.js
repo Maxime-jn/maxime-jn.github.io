@@ -1,73 +1,27 @@
 "use strict";
 
-const map = L.map('map').setView([46.2048134126465, 6.146482001629117], 11);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+var map = L.map('map').fitWorld();
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
 }).addTo(map);
 
-const markersData = [
-    { coords: [46.2043907, 6.1431577], content: "Contenu pour le marqueur 1" },
-    { coords: [46.23267904125583, 6.104264756150501], content: "Contenu pour le marqueur 2" },
-    { coords: [46.28004597496244, 6.195724667454375], content: "Contenu pour le marqueur 3" },
-    { coords: [46.14935957331897, 5.974429667801284], content: "Contenu pour le marqueur 4" },
-    { coords: [46.18253897476035, 6.14054572352949], content: "Contenu pour le marqueur 5" },
-    { coords: [46.21363767499827, 6.105416712847887], content: "Contenu pour le marqueur 6" },
-    { coords: [46.21473536253226, 6.034728655371496], content: "Contenu pour le marqueur 7" },
-];
-
-markersData.forEach((markerData, index) => {
-    const marker = L.marker(markerData.coords).addTo(map);
-    marker.on('click', () => showDetails(markerData.content));
-});
-
-function showDetails(content) {
-    document.getElementById("details").style.display = "block";
-    document.getElementById("markerContent").innerText = content;
-}
-
-function closeDetails() {
-    document.getElementById("details").style.display = "none";
-}
-
-// -------------------------------------------------------------------
-
-
+map.locate({ setView: true, maxZoom: 11 });
 
 let useFrontCamera = false;
 let isCameraActive = false;
 let currentStream = null;
+let texteMarqueur = "";
 const videoElement = document.getElementById("myVideo");
+const canvas = document.getElementById("photoCanvas");
 
-
-
-
-
-document.getElementById("activateCamera").addEventListener("click", async () => {
-    if (isCameraActive) {
-        stopCamera();
-    } else {
-        await startCamera();
-    }
-});
-
-document.getElementById("switchCamera").addEventListener("click", async () => {
-    useFrontCamera = !useFrontCamera;
-    if (isCameraActive) {
-        await startCamera();
-    }
-});
-
-document.getElementById("capturePhoto").addEventListener("click", () => {
-    capturePhoto();
-});
-
-
+// Fonction pour démarrer la caméra
 async function startCamera() {
-   
     if (currentStream) {
         stopCamera();
     }
-    
+
     const constraints = {
         video: { facingMode: useFrontCamera ? "user" : "environment" }
     };
@@ -82,7 +36,7 @@ async function startCamera() {
     }
 }
 
-
+// Fonction pour arrêter la caméra
 function stopCamera() {
     if (currentStream) {
         let tracks = currentStream.getTracks();
@@ -91,25 +45,61 @@ function stopCamera() {
     videoElement.srcObject = null;
     videoElement.style.display = "none";
     isCameraActive = false;
-    currentStream = null; 
+    currentStream = null;
 }
 
-
+// Fonction pour capturer la photo
 function capturePhoto() {
-    const canvas = document.getElementById("photoCanvas");
     canvas.width = videoElement.videoWidth;
     canvas.height = videoElement.videoHeight;
     const context = canvas.getContext("2d");
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    
+    // Arrêter la caméra après la capture
+    stopCamera();
+
+    // Convertir l'image en URL pour l'utiliser dans le marqueur
     const imageUrl = canvas.toDataURL("image/png");
-
-   
-    const link = document.createElement("a");
-    link.href = imageUrl;
-    link.download = "photo.png";
-    link.click();
+    
+    // Créer le marqueur avec le texte et l'image
+    if (texteMarqueur) {
+        const marker = L.marker([currentLat, currentLng]).addTo(map);
+        marker.bindPopup(`
+            <div>
+                <p>${texteMarqueur}</p>
+                <img src="${imageUrl}" alt="Photo du marqueur" style="width:100px; height:auto; border-radius:8px;"/>
+            </div>
+        `);
+        marker.openPopup();
+    }
 }
 
-if (!localStorage.getItem('markerData')) {
-    localStorage.setItem('markerData', JSON.stringify(markersData));
-}
+let currentLat, currentLng;
+
+// Événement clic sur la carte pour ajouter un marqueur avec texte et image
+map.on("click", async function(event) {
+    const { lat, lng } = event.latlng;
+    currentLat = lat;
+    currentLng = lng;
+
+    // Saisir le texte pour le marqueur
+    texteMarqueur = prompt("Entrez le texte du marqueur:");
+    
+    if (texteMarqueur) {
+        // Démarrer la caméra pour capturer la photo après la saisie du texte
+        await startCamera();
+    }
+});
+
+// Bouton pour capturer la photo après activation de la caméra
+document.getElementById("capturePhoto").addEventListener("click", () => {
+    capturePhoto();
+});
+
+// Bouton pour changer de caméra (avant/arrière)
+document.getElementById("switchCamera").addEventListener("click", async () => {
+    useFrontCamera = !useFrontCamera;
+    if (isCameraActive) {
+        await startCamera();
+    }
+});

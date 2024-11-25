@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcription Vocale avec Infomaniak Whisper</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px; padding: 10px; cursor: pointer; }
+        .loading { display: none; color: green; font-weight: bold; }
+        ul { list-style-type: none; padding: 0; }
+        li { background: #f0f0f0; margin: 5px 0; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Transcription Vocale</h1>
+    <button id="startBtn">Démarrer l'enregistrement</button>
+    <button id="stopBtn" disabled>Arrêter l'enregistrement</button>
+    <p class="loading" id="loadingMsg">Transcription en cours...</p>
+    <h2>Transcriptions</h2>
+    <ul id="transcriptionList"></ul>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        const apiKey = "4JXuZq6cpFRZRpUNg7ZGkpn5ikWnxarDrI0T4P5lbs6rcuhX7LRTUumzS9pEZF-zW7I51_EIupOLtOzp";
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const loadingMsg = document.getElementById('loadingMsg');
+        const transcriptionList = document.getElementById('transcriptionList');
+        const url = "https://api.infomaniak.com/1/ai/272/openai/audio/transcriptions";
+
+        startBtn.addEventListener('click', async () => {
+            audioChunks = [];
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+        });
+
+        stopBtn.addEventListener('click', () => {
+            mediaRecorder.stop();
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            mediaRecorder.onstop = async () => {
+                loadingMsg.style.display = 'block';
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                const formData = new FormData();
+                formData.append("file", audioBlob);
+                formData.append("model", "whisper");
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { "Authorization": `Bearer ${apiKey}` }, // Supprimé Content-Type
+                        body: formData
+                    });
+                    const data = await response.json();
+                    pollTranscription(data.batch_id);
+                } catch (error) {
+                    alert("Erreur lors de l'envoi à l'API : " + error.message);
+                    loadingMsg.style.display = 'none';
+                }
+            };
+        });
+
+        async function pollTranscription(batchId) {
+            const interval = setInterval(async () => {
+                const response = await fetch(`https://api.infomaniak.com/1/ai/272/results/${batchId}`, {
+                    headers: { "Authorization": `Bearer ${apiKey}` }
+                });
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    clearInterval(interval);
+                    saveAndDisplayTranscription(data.transcription);
+                    loadingMsg.style.display = 'none';
+                }
+            }, 3000); // Vérification toutes les 3 secondes
+        }
+
+        function saveAndDisplayTranscription(text) {
+            const transcriptions = JSON.parse(localStorage.getItem('transcriptions')) || [];
+            transcriptions.push(text);
+            localStorage.setItem('transcriptions', JSON.stringify(transcriptions));
+            displayTranscriptions();
+        }
+
+        function displayTranscriptions() {
+            transcriptionList.innerHTML = '';
+            const transcriptions = JSON.parse(localStorage.getItem('transcriptions')) || [];
+            transcriptions.forEach(transcription => {
+                const li = document.createElement('li');
+                li.textContent = transcription;
+                transcriptionList.appendChild(li);
+            });
+        }
+
+        window.onload = displayTranscriptions;
+    </script>
+</body>
+</html>

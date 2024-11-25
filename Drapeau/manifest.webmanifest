@@ -1,9 +1,9 @@
 {
     "lang": "fr",
     "dir": "ltr",
-    "name": " PWA Hub maxime.jn",
-    "description": "PWA Hub",
-    "short_name": "PWA hub",
+    "name": " Drapeau",
+    "description": "Drapeau",
+    "short_name": "Drapeau",
     "scope": "/",
     "start_url": "/",
     "display": "standalone",

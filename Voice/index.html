@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transcription Vocale avec Infomaniak Whisper</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        button { margin: 10px; padding: 10px; cursor: pointer; }
-        .loading { display: none; color: green; font-weight: bold; }
-        ul { list-style-type: none; padding: 0; }
-        li { background: #f0f0f0; margin: 5px 0; padding: 10px; border-radius: 5px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: none;
+            color: green;
+            font-weight: bold;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: #f0f0f0;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
+
 <body>
     <h1>Transcription Vocale</h1>
     <button id="startBtn">Démarrer l'enregistrement</button>
@@ -57,7 +82,7 @@
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: { "Authorization": `Bearer ${apiKey}` }, // Supprimé Content-Type
+                        headers: { "Authorization": `Bearer ${apiKey}` },
                         body: formData
                     });
                     const data = await response.json();
@@ -104,4 +129,5 @@
         window.onload = displayTranscriptions;
     </script>
 </body>
+
 </html>

@@ -5,10 +5,46 @@
     <title>mytitle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    main {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        text-align: center;
+    }
+
+    .send {
+        width: 500px;
+        height: 500px;
+        background-color: #f5f5f5;
+    }
+</style>
 
 <body>
-    <div>Application de démonstration bluetooth...</div>
-    <div id="status">None</div>
+
+
+    <main>
+        <div>
+            <div>Se connecter </div>
+            <div id="status">None</div>
+            <button onclick="init()">Connexion bluetooth</button>
+        </div>
+        <div>
+            <button class="send" onclick="sendCmd('joueur1')">Joueur 1 Cliquer</button>
+            <button class="send" onclick="sendCmd('joueur2')">Joueur 2 Cliquer</button>
+        </div>
+    </main>
+
+
     <script>
 
         // variable globale pour l'envoi et la réception de messages vers l'équipement bluetooth distant
@@ -31,6 +67,11 @@
             let msg = `device.name=${device.name}`;
             document.getElementById("status").innerText = msg;
             console.log(msg);
+
+
+            listServices();
+            connect();
+
         }
 
         async function listServices() {
@@ -75,13 +116,9 @@
         }
 
     </script>
-    <button onclick="init()">Appairer un équipement bluetooth (BT)</button>
-    <button onclick="listServices()">Lister les identifiants de services BT disponibles</button>
-    <button onclick="connect()">Se connecter aux canaux réception (RT) / émission (TX) BT</button>
 
-    <label for="myCmdInput">Commande: </label>
-    <input type="text" id="myCmdInput" />
-    <button onclick="sendCmd(document.getElementById('myCmdInput').value)">Envoyer</button>
+
+
 
 </body>
 

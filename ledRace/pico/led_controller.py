@@ -51,6 +51,11 @@ class LedController:
         self.update_pixel()
 
     def move_led(self, player):
+        if player == "reset":
+            print("reset")
+            self.set_led_color(self.BLACK)
+            self.update_pixel()
+            return
         """ Déplace une bande de 5 LEDs pour le joueur correspondant """
         if player not in self.positions:
             return

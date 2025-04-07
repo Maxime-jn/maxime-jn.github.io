@@ -145,8 +145,16 @@
             conteurJ2 = 0;
             document.querySelector('.winner').innerText = " ";
             buttons.style.display = "block";
+            
+            
+            const encoder = new TextEncoder();
+            document.getElementById("status").innerText = `commande à envoyer: reset`;
+            const cmdBytes = encoder.encode(cmd);
+            await tx.writeValue(cmdBytes);
+            
             document.getElementById("status").innerText = "reset effectué";
         }
+
     </script>
 
 

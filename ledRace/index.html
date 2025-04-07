@@ -27,6 +27,11 @@
         height: 500px;
         background-color: #f5f5f5;
     }
+
+    .winner {
+        width: 500px;
+        height: 500px;
+    }
 </style>
 
 <body>
@@ -37,11 +42,13 @@
             <div>Se connecter </div>
             <div id="status">None</div>
             <button onclick="init()">Connexion bluetooth</button>
+            <button class="reset" onclick="reset()">Reset</button>
         </div>
-        <div>
+        <div class="buttons">
             <button class="send" onclick="sendCmd('joueur1')">Joueur 1 Cliquer</button>
             <button class="send" onclick="sendCmd('joueur2')">Joueur 2 Cliquer</button>
         </div>
+        <H1 class="winner"></H1>
     </main>
 
 
@@ -50,6 +57,12 @@
         // variable globale pour l'envoi et la réception de messages vers l'équipement bluetooth distant
         var rx = null;
         var tx = null;
+
+
+        let conteurJ1 = 0;
+        let conteurJ2 = 0;
+
+        let buttons = document.querySelector('.buttons');
 
         // identifiant standardisé pour une communication texte (le nom de ce service est dénommé: Nordic UART)
         const serviceUuid = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
@@ -67,7 +80,6 @@
             let msg = `device.name=${device.name}`;
             document.getElementById("status").innerText = msg;
             console.log(msg);
-
 
             listServices();
             connect();
@@ -109,12 +121,32 @@
         }
 
         async function sendCmd(cmd) {
+            if (cmd == "joueur1") {
+                conteurJ1++;
+            } else {
+                conteurJ2++;
+            }
+            if (conteurJ1 >= 120) {
+                buttons.style.display = "none";
+                document.querySelector('.winner').innerText = "Joueur 1 a gagné !";
+            } else if (conteurJ2 >= 120) {
+                buttons.style.display = "none";
+                document.querySelector('.winner').innerText = "Joueur 2 a gagné !";
+            }
+
             const encoder = new TextEncoder();
             document.getElementById("status").innerText = `commande à envoyer: ${cmd}`;
             const cmdBytes = encoder.encode(cmd);
             await tx.writeValue(cmdBytes);
         }
 
+        async function reset() {
+            conteurJ1 = 0;
+            conteurJ2 = 0;
+            document.querySelector('.winner').innerText = " ";
+            buttons.style.display = "block";
+            document.getElementById("status").innerText = "reset effectué";
+        }
     </script>
 
 

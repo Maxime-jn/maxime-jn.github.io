@@ -17,7 +17,7 @@ class LedController:
     RED = (255, 0, 0)
     YELLOW = (255, 215, 0)
 
-    def __init__(self, num_leds=300):
+    def __init__(self, num_leds=120):
         self.num_leds = num_leds
         self.pixel_array = array.array("I", [0 for _ in range(num_leds)])
         self.positions = {"joueur1": 0, "joueur2": 0}
@@ -51,13 +51,37 @@ class LedController:
         self.update_pixel()
 
     def move_led(self, player):
-        """ Déplace une LED pour le joueur correspondant """
+        """ Déplace une bande de 5 LEDs pour le joueur correspondant """
         if player not in self.positions:
             return
-        
-        self.positions[player] = (self.positions[player] + 1) % self.num_leds  # Avance en boucle
-        self.pixel_array = array.array("I", [0 for _ in range(self.num_leds)])  # Reset bandeau
-        self.pixel_array[self.positions[player]] = (self.colors[player][1] << 16) + (self.colors[player][0] << 8) + self.colors[player][2]
+
+        # Éteint les LEDs derrière le joueur
+        for i in range(5):
+            pos = (self.positions[player] + i) % self.num_leds
+            self.pixel_array[pos] = 0  # Éteint la LED
+
+        # Avance la position du joueur
+        self.positions[player] = (self.positions[player] + 1) % self.num_leds
+
+        # Vérifie si le joueur atteint la fin
+        if self.positions[player] + 5 >= self.num_leds:
+            print(f"Le joueur {player} a gagné !")
+            return
+
+        # Allume les LEDs à la nouvelle position
+        for i in range(5):
+            pos = (self.positions[player] + i) % self.num_leds
+
+            # Vérifie si une autre couleur est déjà présente
+            current_color = self.pixel_array[pos]
+            if current_color != 0:
+                # Mélange les couleurs en mettant du rose
+                self.pixel_array[pos] = (255 << 16) + (0 << 8) + 255  # Couleur rose
+            else:
+                # Applique la couleur du joueur
+                self.pixel_array[pos] = (self.colors[player][1] << 16) + (self.colors[player][0] << 8) + self.colors[player][2]
+
+        print(f"Position du joueur {player}: {self.positions[player]}")
         self.update_pixel()
 
     def update_pixel(self, brightness=None):

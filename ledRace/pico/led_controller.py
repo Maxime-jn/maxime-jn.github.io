@@ -49,14 +49,13 @@ class LedController:
         print("set_random")
         self.set_led_color((random.randrange(255), random.randrange(255), random.randrange(255)))
         self.update_pixel()
+    def reset(self):
+        """Réinitialise toutes les LEDs et les positions des joueurs."""
+        self.positions = {"joueur1": 0, "joueur2": 0}
+        self.set_led_color(self.BLACK)
+        self.update_pixel()
 
     def move_led(self, player):
-        if player == "reset":
-            print("reset")
-            self.set_led_color(self.BLACK)
-            self.update_pixel()
-            return
-        """ Déplace une bande de 5 LEDs pour le joueur correspondant """
         if player not in self.positions:
             return
 
@@ -77,11 +76,12 @@ class LedController:
         for i in range(5):
             pos = (self.positions[player] + i) % self.num_leds
 
-            # Vérifie si une autre couleur est déjà présente
-            current_color = self.pixel_array[pos]
-            if current_color != 0:
-                # Mélange les couleurs en mettant du rose
-                self.pixel_array[pos] = (255 << 16) + (0 << 8) + 255  # Couleur rose
+            # Vérifie si une autre couleur de joueur est déjà présente
+            autre_joueur = "joueur2" if player == "joueur1" else "joueur1"
+            autre_positions = [(self.positions[autre_joueur] + j) % self.num_leds for j in range(5)]
+            if pos in autre_positions:
+                # Violet (rouge + bleu)
+                self.pixel_array[pos] = (128 << 16) + (0 << 8) + 128
             else:
                 # Applique la couleur du joueur
                 self.pixel_array[pos] = (self.colors[player][1] << 16) + (self.colors[player][0] << 8) + self.colors[player][2]

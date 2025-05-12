@@ -22,6 +22,14 @@ class BtControllerLed(BtController):
 
         data = data.decode('utf-8').strip()
         print(f"data utf-8={data}")  # Affiche le message reçu
+        if data == "reset":
+            print("Réinitialisation de la course")
+            self._led_controller.positions = {"joueur1": 0, "joueur2": 0}
+            self._led_controller.set_led_color(self._led_controller.BLACK)
+            self._led_controller.update_pixel()
+            self.game_over = False
+            return
+
         if data in ["joueur1", "joueur2"]:
             print(f"Avancement du joueur: {data}")
             self._led_controller.move_led(data)

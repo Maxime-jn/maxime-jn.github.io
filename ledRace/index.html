@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>mytitle</title>
+    <title>LedRace</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <style>
@@ -45,8 +45,8 @@
             <button class="reset" onclick="reset()">Reset</button>
         </div>
         <div class="buttons">
-            <button class="send" onclick="sendCmd('joueur1')">Joueur 1 Cliquer</button>
-            <button class="send" onclick="sendCmd('joueur2')">Joueur 2 Cliquer</button>
+            <button class="send" ontouchstart="sendCmd('joueur1')">Joueur 1 Cliquer</button>
+            <button class="send" ontouchstart="sendCmd('joueur2')">Joueur 2 Cliquer</button>
         </div>
         <H1 class="winner"></H1>
     </main>
@@ -126,10 +126,10 @@
             } else {
                 conteurJ2++;
             }
-            if (conteurJ1 >= 120) {
+            if (conteurJ1 >= 120 -4) {
                 buttons.style.display = "none";
                 document.querySelector('.winner').innerText = "Joueur 1 a gagné !";
-            } else if (conteurJ2 >= 120) {
+            } else if (conteurJ2 >= 120 -4) {
                 buttons.style.display = "none";
                 document.querySelector('.winner').innerText = "Joueur 2 a gagné !";
             }

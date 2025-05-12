@@ -44,11 +44,20 @@
             <button onclick="init()">Connexion bluetooth</button>
             <button class="reset" onclick="reset()">Reset</button>
         </div>
+        <div>
+            <label>Nom Joueur 1 : <input id="nameJ1" type="text" /></label>
+            <label>Nom Joueur 2 : <input id="nameJ2" type="text" /></label>
+            <button onclick="saveNames()">Enregistrer les noms</button>
+        </div>
         <div class="buttons">
             <button class="send" ontouchstart="sendCmd('joueur1')">Joueur 1 Cliquer</button>
             <button class="send" ontouchstart="sendCmd('joueur2')">Joueur 2 Cliquer</button>
         </div>
-        <H1 class="winner"></H1>
+        <h1 class="winner"></h1>
+        <div>
+            <h2>Classement</h2>
+            <ul id="classement"></ul>
+        </div>
     </main>
 
 
@@ -120,18 +129,63 @@
             document.getElementById("status").innerText = "Connexion RX/TX effectuée";
         }
 
+        // Gestion des noms et du classement
+        function saveNames() {
+            localStorage.setItem('nameJ1', document.getElementById('nameJ1').value);
+            localStorage.setItem('nameJ2', document.getElementById('nameJ2').value);
+            updateButtons();
+        }
+
+        function updateButtons() {
+            let n1 = localStorage.getItem('nameJ1') || "Joueur 1";
+            let n2 = localStorage.getItem('nameJ2') || "Joueur 2";
+            document.querySelectorAll('.send')[0].innerText = n1 + " Cliquer";
+            document.querySelectorAll('.send')[1].innerText = n2 + " Cliquer";
+            document.getElementById('nameJ1').value = n1;
+            document.getElementById('nameJ2').value = n2;
+        }
+
+        function updateClassement() {
+            let classement = JSON.parse(localStorage.getItem('classement') || '{}');
+            let ul = document.getElementById('classement');
+            ul.innerHTML = '';
+            Object.entries(classement).sort((a, b) => b[1] - a[1]).forEach(([nom, win]) => {
+                let li = document.createElement('li');
+                li.innerText = `${nom} : ${win} victoire${win > 1 ? 's' : ''}`;
+                ul.appendChild(li);
+            });
+        }
+
+        function addWin(joueur) {
+            let classement = JSON.parse(localStorage.getItem('classement') || '{}');
+            let nom = joueur === 'joueur1' ? (localStorage.getItem('nameJ1') || "Joueur 1") : (localStorage.getItem('nameJ2') || "Joueur 2");
+            classement[nom] = (classement[nom] || 0) + 1;
+            localStorage.setItem('classement', JSON.stringify(classement));
+            updateClassement();
+        }
+
+        // Au chargement, on restaure les noms et le classement
+        window.onload = function () {
+            updateButtons();
+            updateClassement();
+        }
+
         async function sendCmd(cmd) {
             if (cmd == "joueur1") {
                 conteurJ1++;
             } else {
                 conteurJ2++;
             }
-            if (conteurJ1 >= 120 -4) {
+            if (conteurJ1 >= 120 - 4) {
                 buttons.style.display = "none";
-                document.querySelector('.winner').innerText = "Joueur 1 a gagné !";
-            } else if (conteurJ2 >= 120 -4) {
+                let nom = localStorage.getItem('nameJ1') || "Joueur 1";
+                document.querySelector('.winner').innerText = nom + " a gagné !";
+                addWin('joueur1');
+            } else if (conteurJ2 >= 120 - 4) {
                 buttons.style.display = "none";
-                document.querySelector('.winner').innerText = "Joueur 2 a gagné !";
+                let nom = localStorage.getItem('nameJ2') || "Joueur 2";
+                document.querySelector('.winner').innerText = nom + " a gagné !";
+                addWin('joueur2');
             }
 
             const encoder = new TextEncoder();
@@ -146,13 +200,13 @@
             conteurJ2 = 0;
             document.querySelector('.winner').innerText = " ";
             buttons.style.display = "block";
-            
-            
+
+
             const encoder = new TextEncoder();
             document.getElementById("status").innerText = `commande à envoyer: reset`;
             const cmdBytes = encoder.encode(cmd);
             await tx.writeValue(cmdBytes);
-            
+
             document.getElementById("status").innerText = "reset effectué";
         }
 

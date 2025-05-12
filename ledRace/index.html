@@ -70,6 +70,7 @@
 
         let conteurJ1 = 0;
         let conteurJ2 = 0;
+        let chronoStart = null; // Ajout chrono
 
         let buttons = document.querySelector('.buttons');
 
@@ -149,11 +150,13 @@
             let classement = JSON.parse(localStorage.getItem('classement') || '{}');
             let ul = document.getElementById('classement');
             ul.innerHTML = '';
-            Object.entries(classement).sort((a, b) => b[1] - a[1]).forEach(([nom, win]) => {
-                let li = document.createElement('li');
-                li.innerText = `${nom} : ${win} victoire${win > 1 ? 's' : ''}`;
-                ul.appendChild(li);
-            });
+            Object.entries(classement)
+                .sort((a, b) => a[1] - b[1]) // Tri du meilleur temps au moins bon
+                .forEach(([nom, temps]) => {
+                    let li = document.createElement('li');
+                    li.innerText = `${nom} : ${temps.toFixed(2)} secondes`;
+                    ul.appendChild(li);
+                });
         }
 
         function addWin(joueur) {
@@ -164,6 +167,21 @@
             updateClassement();
         }
 
+        // Ajoute cette fonction pour enregistrer le temps
+        function addTime(joueur) {
+            if (chronoStart === null) return;
+            let chronoEnd = Date.now();
+            let temps = (chronoEnd - chronoStart) / 1000; // en secondes
+            let classement = JSON.parse(localStorage.getItem('classement') || '{}');
+            let nom = joueur === 'joueur1' ? (localStorage.getItem('nameJ1') || "Joueur 1") : (localStorage.getItem('nameJ2') || "Joueur 2");
+            if (!classement[nom] || temps < classement[nom]) {
+                classement[nom] = temps; // On garde le meilleur temps
+            }
+            localStorage.setItem('classement', JSON.stringify(classement));
+            updateClassement();
+            chronoStart = null; // Réinitialise le chrono
+        }
+
         // Au chargement, on restaure les noms et le classement
         window.onload = function () {
             updateButtons();
@@ -171,6 +189,9 @@
         }
 
         async function sendCmd(cmd) {
+            if (chronoStart === null) {
+                chronoStart = Date.now(); // Démarre le chrono au premier clic
+            }
             if (cmd == "joueur1") {
                 conteurJ1++;
             } else {
@@ -180,12 +201,12 @@
                 buttons.style.display = "none";
                 let nom = localStorage.getItem('nameJ1') || "Joueur 1";
                 document.querySelector('.winner').innerText = nom + " a gagné !";
-                addWin('joueur1');
+                addTime('joueur1'); // Ajout du temps
             } else if (conteurJ2 >= 120 - 4) {
                 buttons.style.display = "none";
                 let nom = localStorage.getItem('nameJ2') || "Joueur 2";
                 document.querySelector('.winner').innerText = nom + " a gagné !";
-                addWin('joueur2');
+                addTime('joueur2'); // Ajout du temps
             }
 
             const encoder = new TextEncoder();
@@ -198,9 +219,9 @@
             cmd = "reset";
             conteurJ1 = 0;
             conteurJ2 = 0;
+            chronoStart = null; // Réinitialise le chrono
             document.querySelector('.winner').innerText = " ";
             buttons.style.display = "block";
-
 
             const encoder = new TextEncoder();
             document.getElementById("status").innerText = `commande à envoyer: reset`;

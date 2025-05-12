@@ -59,32 +59,29 @@ class LedController:
         if player not in self.positions:
             return
 
-        # Éteint les LEDs derrière le joueur
-        for i in range(5):
-            pos = (self.positions[player] + i) % self.num_leds
-            self.pixel_array[pos] = 0  # Éteint la LED
-
         # Avance la position du joueur
         self.positions[player] = (self.positions[player] + 1) % self.num_leds
 
-        # Vérifie si le joueur atteint la fin
-        if self.positions[player] + 5 >= self.num_leds:
-            print(f"Le joueur {player} a gagné !")
-            return
+        # Réinitialise toutes les LEDs à éteint
+        for i in range(self.num_leds):
+            self.pixel_array[i] = 0
 
-        # Allume les LEDs à la nouvelle position
-        for i in range(5):
-            pos = (self.positions[player] + i) % self.num_leds
+        # Calcule les positions occupées par chaque joueur
+        positions_j1 = set((self.positions["joueur1"] + i) % self.num_leds for i in range(5))
+        positions_j2 = set((self.positions["joueur2"] + i) % self.num_leds for i in range(5))
 
-            # Vérifie si une autre couleur de joueur est déjà présente
-            autre_joueur = "joueur2" if player == "joueur1" else "joueur1"
-            autre_positions = [(self.positions[autre_joueur] + j) % self.num_leds for j in range(5)]
-            if pos in autre_positions:
+        # Affiche les LEDs pour chaque joueur
+        for i in range(self.num_leds):
+            if i in positions_j1 and i in positions_j2:
                 # Violet (rouge + bleu)
-                self.pixel_array[pos] = (128 << 16) + (0 << 8) + 128
-            else:
-                # Applique la couleur du joueur
-                self.pixel_array[pos] = (self.colors[player][1] << 16) + (self.colors[player][0] << 8) + self.colors[player][2]
+                self.pixel_array[i] = (128 << 16) + (0 << 8) + 128
+            elif i in positions_j1:
+                c = self.colors["joueur1"]
+                self.pixel_array[i] = (c[1] << 16) + (c[0] << 8) + c[2]
+            elif i in positions_j2:
+                c = self.colors["joueur2"]
+                self.pixel_array[i] = (c[1] << 16) + (c[0] << 8) + c[2]
+            # sinon, la LED reste éteinte
 
         print(f"Position du joueur {player}: {self.positions[player]}")
         self.update_pixel()
